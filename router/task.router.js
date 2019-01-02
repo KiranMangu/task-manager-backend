@@ -73,7 +73,9 @@ router.post('/task/create', (req, res) => {
     //         complete: false,
     //         priority: 10
     //     });
+    
     let newTask = new Task(req.body);
+    console.log('task '+ newTask);
     newTask.save()
         .then(issue => {
             res.status(200).json({ 'issue': 'Added successfully' });
