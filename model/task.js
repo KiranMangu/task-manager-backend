@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 let Task = new Schema({
+    _id: { type: Schema.Types.ObjectId },
     task: { type: String, required: true },
     startDate: { type: Date, default: Date.now() },
     endDate: { type: Date, default: Date.now() },

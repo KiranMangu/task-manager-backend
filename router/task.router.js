@@ -21,12 +21,15 @@ router.get('/tasks', (req, res) => {
 });
 
 router.get('/task/:id', (req, res) => {
-    Task.find({ _id: req.params.id }, (err, task) => {
+    // console.log('Task By Id: ')
+    // console.log(req.params.id)
+    // console.log(id)
+    Task.findById({ _id: req.params.id }, (err, task) => {
         if (!!err) {
             console.log('Error: ' + err)
         }
         else {
-            console.log('Tasks: ' + JSON.stringify(task));
+            console.log('Tasks by id: ' + JSON.stringify(task));
             res.send(task);
         }
     });
@@ -35,32 +38,43 @@ router.get('/task/:id', (req, res) => {
 
 // Update priority and Status
 router.post('/task/update', (req, res) => {
-    Task.updateOne({ _id: req.params.id },
+    console.log(req.body);
+    Task.updateOne({ _id: req.body.id },
         {
             task: req.body.task,
             priority: req.body.priority,
             parentTask: req.body.parentTask,
             startDate: req.body.startDate,
             endDate: req.body.endDate
-        }, (err, res) => {
+        },
+        //{ multi: true },
+        (err, numDocsUpdated) => {
             if (err) {
                 console.log('Unable to update the task');
+                res.status(400).send('Error updating the task')
             }
             else {
-                res.json('Updated successfully');
+                console.log('Number Docs Effected: ' + JSON.stringify(numDocsUpdated));
+                res.send('Number Docs Effected: ' + JSON.stringify(numDocsUpdated));
             }
         });
 });
 
+// End Task
 router.post('/task/complete', (req, res) => {
-    Task.updateOne({ _id: req.body.id }, { finished: req.body.finished }, (err, res) => {
-        if (err) {
-            console.log('Unable to update the task');
-        }
-        else {
-            res.json('Updated successfully');
-        }
-    });
+    Task.updateOne({ _id: req.body.id },
+        { finished: req.body.finished },
+        //{ multi: true }, 
+        (err, numDocsUpdated) => {
+            if (err) {
+                console.log('Unable to update the task');
+                res.status(400).send('Error updating the task')
+            }
+            else {
+                console.log('Number Docs Effected: ' + JSON.stringify(numDocsUpdated));
+                res.send('Number Docs Effected: ' + JSON.stringify(numDocsUpdated));
+            }
+        });
 });
 
 router.post('/task/create', (req, res) => {
@@ -73,9 +87,9 @@ router.post('/task/create', (req, res) => {
     //         complete: false,
     //         priority: 10
     //     });
-    
+
     let newTask = new Task(req.body);
-    console.log('task '+ newTask);
+    console.log('task ' + newTask);
     newTask.save()
         .then(issue => {
             res.status(200).json({ 'issue': 'Added successfully' });
